@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
 from care.models import Doctor, Dispensary
-from care.enums.role import RoleEnum   # ton Enum avec CHIEF_DOCTOR
+from care.enums.role import RoleEnum
+from account.models import AuthToken
 
 class IsOwner(BasePermission):
     """
@@ -20,6 +21,7 @@ class IsOwnerOrChiefDoctor(BasePermission):
             return False
 
         try:
+            
             dispensary = Dispensary.objects.get(token=token)
         except Dispensary.DoesNotExist:
             return False

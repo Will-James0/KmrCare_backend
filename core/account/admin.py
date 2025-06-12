@@ -1,5 +1,5 @@
 from django.contrib import admin
-from account.models import WaitingUser
+from account.models import WaitingUser, AuthToken
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -15,3 +15,9 @@ class UserAdmin(admin.ModelAdmin):
 class WaitingUserAdmin(admin.ModelAdmin):
     model = WaitingUser
     list_display = ("username", "token")
+    
+
+@admin.register(AuthToken)
+class AuthTokenAdmin(admin.ModelAdmin):
+    model = AuthToken
+    list_display = ("user", "key", "created")

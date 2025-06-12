@@ -3,18 +3,20 @@ from rest_framework.response import Response
 from care.serializers import doctor
 from care.models import Doctor, Dispensary, Role
 from django.shortcuts import get_object_or_404
-from account.authentication import TokenAuthentication
+from account.authentication import AuthTokenAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from care.permissions import IsOwner, IsOwnerOrChiefDoctor, CanDeleteDoctor
+from care.permissions import doctor as doctor_perm
 from django.contrib.auth import get_user_model
-from rest_framework import generics
+from rest_framework import generics, permissions
+from care.mixins import doctor as doctor_mixins
 
 User = get_user_model()
 
 
 class AddDoctorView(APIView):
     
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [AuthTokenAuthentication]
     permission_classes = [IsAuthenticated, IsOwnerOrChiefDoctor]
     
     def post(self, request, token):
@@ -43,17 +45,29 @@ class AddDoctorView(APIView):
 
 class DeleteDoctorView(generics.DestroyAPIView):
     
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [AuthTokenAuthentication]
     permission_classes = [IsAuthenticated, CanDeleteDoctor]
     queryset = Doctor.objects.all()
     serializer_class = doctor.DoctorSerializer
     lookup_field = 'token'
     
     
-# class UpdateDoctorView(generics.UpdateAPIView):
+class ListDoctorView(doctor_mixins.UserQuerySetMixin, generics.ListAPIView):
     
-#     authentication_classes = [TokenAuthentication]
-#     permission_classes = [IsAuthenticated, CanDeleteDoctor]
-#     queryset = Doctor.objects.all()
-#     serializer_class = doctor.DoctorSerializer
-#     lookup_field = 'token'
+    authentication_classes = [AuthTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Doctor.objects.all()
+    serializer_class = doctor.DoctorSerializer
+    lookup_field = 'token'
+    user_field = 'owner'
+    
+
+class RetrieveDctorView(doctor_mixins.UserQuerySetMixin, generics.RetrieveAPIView):
+    
+    authentication_classes = [AuthTokenAuthentication]
+    permission_classes = [IsAuthenticated, doctor_perm.IsOwnerOrChiefDoctor]
+    queryset = Doctor.objects.all()
+    serializer_class = doctor.DoctorSerializer
+    lookup_field = 'token'
+    user_field = 'owner'
+    

@@ -11,10 +11,7 @@ class AuthToken(Token):
         super().save(*args, **kwargs)
 
     def est_expire(self):
-        if self.validite and timezone.now() >= self.validite:
-            self.delete()
-            return True
-        return False
+        return self.validite and timezone.now() >= self.validite
 
     def __str__(self):
         return f"{self.user} - Expire le {self.validite}"

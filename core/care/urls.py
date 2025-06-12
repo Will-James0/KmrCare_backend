@@ -1,9 +1,17 @@
 from django.urls import path, include
-from care.views.doctor import AddDoctorView
+from care.views import dispensary, doctor
 
 # Create your views here.
 urlpatterns = [
     path("doctor/", include([
-        path("create/<uuid:token>/", AddDoctorView.as_view()),
+        path("list/", doctor.ListDoctorView.as_view()),
+        path("list/", doctor.ListDoctorView.as_view()),
+        path("create/<uuid:token>/", doctor.AddDoctorView.as_view()),
+        path("delete/<uuid:token>/", doctor.DeleteDoctorView.as_view()),
+        path("details/<uuid:token>/", doctor.RetrieveDctorView.as_view()),
+    ])),
+    
+    path("dispensary/", include([
+        path("list/", dispensary.DispensaryListView.as_view()),
     ]))
 ]

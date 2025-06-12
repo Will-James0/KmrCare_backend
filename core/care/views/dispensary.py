@@ -7,6 +7,10 @@ from django.db import transaction
 from care.enums.role import RoleEnum
 from care.serializers import DispensarySerializer, UpdateDispensarySerializer
 from django.contrib.auth import get_user_model
+from account.authentication import AuthTokenAuthentication
+from care.permissions import dispensary as disp_perm
+from rest_framework.permissions import IsAuthenticated
+
 
 User = get_user_model()
 
@@ -20,8 +24,8 @@ class UpdateDispensaryView(generics.UpdateAPIView):
     queryset = Dispensary.objects.all()
     lookup_field = "token"
     serializer_class = UpdateDispensarySerializer
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated, IsDispensaryOwner]   # ← à adapter
+    authentication_classes = [AuthTokenAuthentication]
+    permission_classes = [IsAuthenticated, disp_perm.IsOwnerOrChiefDoctor]
 
     @transaction.atomic
     def perform_update(self, serializer):
@@ -53,4 +57,9 @@ class UpdateDispensaryView(generics.UpdateAPIView):
                 user=new_owner,
                 dispensary=dispensary
             ).delete()
-        
+
+
+class DispensaryListView(generics.ListAPIView):
+    queryset = Dispensary.objects.all()
+    serializer_class = DispensarySerializer
+    authentication_classes = [AuthTokenAuthentication]

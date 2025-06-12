@@ -3,6 +3,7 @@ from account.models import AuthToken, User
 from rest_framework.response import Response
 from care.models import Dispensary, Doctor
 from rest_framework import status
+from account.utils import create_fresh_token
 
 class LoginAPIView(ObtainAuthToken):
     
@@ -10,11 +11,13 @@ class LoginAPIView(ObtainAuthToken):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        token, created = AuthToken.objects.get_or_create(user=user)
+        token = create_fresh_token(user)
+
         data = {}
         data["token"] = {
             'key': token.key,
-            'validite': token.validite
+            'validite': token.validite,
+            'token_exp': int(token.validite.timestamp() * 1000)
         }
         data["user"] = {
             'first_name': user.first_name,
@@ -33,10 +36,12 @@ class DoctorLoginAPIView(ObtainAuthToken):
         user = serializer.validated_data['user']
         data = {}
         if Doctor.objects.filter(user=user).exists() or Dispensary.objects.filter(owner=user).exists():
-            token, created = AuthToken.objects.get_or_create(user=user)
+            token = create_fresh_token(user)
+
             data["token"] = {
                 'key': token.key,
-                'validite': token.validite
+                'validite': token.validite,
+                'token_exp': int(token.validite.timestamp() * 1000)
             }
             data["user"] = {
                 'first_name': user.first_name,
@@ -60,10 +65,12 @@ class AdminLoginAPIView(ObtainAuthToken):
         user = serializer.validated_data['user']
         data = {}
         if user.is_superuser or user.is_staff:
-            token, created = AuthToken.objects.get_or_create(user=user)
+            token = create_fresh_token(user)
+
             data["token"] = {
                 'key': token.key,
-                'validite': token.validite
+                'validite': token.validite,
+                'token_exp': int(token.validite.timestamp() * 1000)
             }
             data["user"] = {
                 'first_name': user.first_name,

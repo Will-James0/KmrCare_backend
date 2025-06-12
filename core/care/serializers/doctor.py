@@ -7,6 +7,14 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ("code", "label")
+        extra_kwargs = {
+            "code": {"read_only": True}, "name": {"read_only": True}
+        }
+
 
 class UserPublicSerializer(serializers.ModelSerializer):
     
@@ -70,6 +78,8 @@ class AddDoctorSerializer(serializers.Serializer):
     
 class DoctorSerializer(serializers.ModelSerializer):
     user = UserPublicSerializer(read_only=True)
+    role = RoleSerializer(read_only=True)
+    dispensary = serializers.CharField(source='dispensary.name', read_only=True)
     
     class Meta:
         model = Doctor

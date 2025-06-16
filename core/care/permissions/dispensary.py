@@ -12,6 +12,15 @@ class IsOwner(BasePermission):
         # obj ici est une instance de Dispensary
         return obj.owner == request.user
     
+    
+class IsOwnerOrAdmin(BasePermission):
+    """
+    L'utilisateur doit être le propriétaire de l'objet OU un admin.
+    """
+    def has_object_permission(self, request, view, obj):
+        return obj.owner == request.user or request.user.is_staff
+
+    
 
 class IsOwnerOrChiefDoctor(BasePermission):
     def has_permission(self, request, view):

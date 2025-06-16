@@ -9,12 +9,12 @@ from care.serializers import DispensarySerializer, UpdateDispensarySerializer
 from django.contrib.auth import get_user_model
 from account.authentication import AuthTokenAuthentication
 from care.permissions import dispensary as disp_perm
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 User = get_user_model()
 
-class RetrieveDispensaryView(generics.RetrieveAPIView):
+class DispensaryDetailView(generics.RetrieveAPIView):
     queryset= Dispensary.objects.all()
     lookup_field = "token"
     serializer_class = DispensarySerializer
@@ -63,3 +63,11 @@ class DispensaryListView(generics.ListAPIView):
     queryset = Dispensary.objects.all()
     serializer_class = DispensarySerializer
     authentication_classes = [AuthTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    
+class DeleteDispensaryView(generics.DestroyAPIView):
+    queryset = Dispensary.objects.all()
+    lookup_field = "token"
+    authentication_classes = [AuthTokenAuthentication]
+    permission_classes = [IsAuthenticated, disp_perm.IsOwnerOrAdmin]

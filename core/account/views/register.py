@@ -8,6 +8,9 @@ from account.models import WaitingUser
 from care.models import Dispensary
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import get_user_model
+from core.utils import *
+from account.authentication import AuthTokenAuthentication
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 User = get_user_model()
 
@@ -39,10 +42,19 @@ class RegisterOwnerView(generics.ListCreateAPIView):
         password = make_password(mdp)
         serializer.save(password = password)
         
+        
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        subject = "Nouvelle demande d'inscription"
+        message = format_registration_email(serializer.data)
+        send_email_to_admins(subject, message)
+        send_user_email(
+            subject="Demande d'inscription reçue",
+            message=format_user_registration(serializer.data),
+            recipient_list=[serializer.data['email']]
+        )
         return Response({
             "message": "Demande envoyée avec succès !",
         }, status=status.HTTP_201_CREATED)
@@ -51,6 +63,8 @@ class ApproveRegisterView(APIView):
     """
     Approuver la demande
     """
+    authentication_classes = [AuthTokenAuthentication]
+    permission_classes = [IsAdminUser]
     
     def post(self, request, token):
         try:
@@ -76,6 +90,13 @@ class ApproveRegisterView(APIView):
             )
             dispensary.save()
             waiting.delete()
+            subject = "✅ Votre demande d'inscription a été acceptée !"
+            message = formation_registration_accepted()
+            send_user_email(
+                subject=subject,
+                message=message,
+                recipient_list=[user.email]
+            )
             return Response({"message": "Inscription approuvée !"}, status=status.HTTP_200_OK)
         except WaitingUser.DoesNotExist:
             return Response({"message": "Iscription introuvable !"}, status=status.HTTP_404_NOT_FOUND)
@@ -85,11 +106,20 @@ class RefuseRegisterView(APIView):
     """
     View pour refuser un utilisateur de la file d'attente
     """
-    
-    def post(self, reuest, token):
+    authentication_classes = [AuthTokenAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, token):
         try:
             waiting = get_object_or_404(WaitingUser, token=token)
             waiting.delete()
+            subject = "❌ Votre demande d'inscription a été rejetée"
+            message = format_registration_rejected()
+            send_user_email(
+                subject=subject,
+                message=message,
+                recipient_list=[waiting.email]
+            )
             return Response({"message": "Incription rejetée"}, status=status.HTTP_200_OK)
         except WaitingUser.DoesNotExist:
             return Response({"message": "Iscription introuvable !"}, status=status.HTTP_404_NOT_FOUND)
@@ -98,7 +128,9 @@ class RefuseRegisterView(APIView):
 class RegisterAdminView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = register.RegisterUserSerializer
-    
+    authentication_classes = [AuthTokenAuthentication]
+    permission_classes = [IsAdminUser]
+
     def perform_create(self, serializer):
         mdp = serializer.validated_data.get("password")
         password = make_password(mdp)

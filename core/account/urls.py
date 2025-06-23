@@ -20,7 +20,7 @@ urlpatterns = [
     path("request/", include([
         path("list/", RegisterOwnerView.as_view()),
         path("approve/<uuid:token>/", ApproveRegisterView.as_view()),
-        path("refuse/<uuid:token>/", RefuseRegisterView.as_view()),
+        path("reject/<uuid:token>/", RefuseRegisterView.as_view()),
     ])),
     
     path("profile/", include([

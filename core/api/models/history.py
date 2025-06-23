@@ -14,7 +14,8 @@ def upload_to(instance, filename):
 class AppointmentHistory(models.Model):
     patient = models.ForeignKey(User, on_delete=models.CASCADE)
     dispensary = models.ForeignKey(Dispensary, on_delete=models.SET_NULL, null=True)
-    date = models.DateTimeField()
+    date = models.DateField()
+    hour = models.TimeField()
     reason = models.TextField(blank=True, null=True)
     file = models.FileField(upload_to=upload_to, blank=True, null=True)
     final_status = models.CharField(max_length=20, choices=AppointmentStatus.choices)

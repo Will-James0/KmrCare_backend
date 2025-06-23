@@ -10,7 +10,7 @@ User = get_user_model()
 
 class Doctor(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    dispensary = models.ForeignKey(Dispensary, on_delete=models.SET_NULL, null=True)
+    dispensary = models.ForeignKey(Dispensary, on_delete=models.SET_NULL, null=True, related_name='doctors')
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     

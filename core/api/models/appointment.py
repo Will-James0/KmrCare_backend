@@ -17,7 +17,8 @@ class Appointment(models.Model):
     """
     patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments')
     dispensary = models.ForeignKey(Dispensary, on_delete=models.CASCADE, related_name='appointments')
-    date = models.DateTimeField()
+    date = models.DateField()
+    hour = models.TimeField()
     reason = models.TextField(blank=True, null=True)
     file = models.FileField(upload_to=upload_to, blank=True, null=True)
     status = models.CharField(

@@ -10,7 +10,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "email", "username", "password")
+        fields = ("first_name", "last_name", "email", "username", "password", "phone")
         
 
 class WaitingUserSerializer(serializers.ModelSerializer):
@@ -21,13 +21,14 @@ class WaitingUserSerializer(serializers.ModelSerializer):
         fields = [
             "first_name", "last_name", "email", "username", "password",
             "dispensary_name", "dispensary_specialities", "dispensary_quarter", "dispensary_localisation",
-            "dispensary_phone", "dispensary_email", "dispensary_opening", "dispensary_ending", "token"
+            "dispensary_phone", "dispensary_email", "dispensary_opening", "dispensary_ending", "token", "phone"
         ]
         extra_kwargs = {
             "password": {"write_only": True},
             "dispensary_phone": {"allow_null": True, "required": False, "allow_blank": True},
             "dispensary_email": {"allow_null": True, "required": False, "allow_blank": True},
-            "token": {"read_only": True}
+            "token": {"read_only": True},
+            "phone": {"allow_null": True, "required": False, "allow_blank": True},
         }
     
     

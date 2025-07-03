@@ -9,6 +9,7 @@ class WaitingUser(models.Model):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128)
+    phone = models.CharField(max_length=15, null=True, blank=True)
     dispensary_name = models.CharField(max_length=255, unique=True)
     dispensary_specialities = models.TextField()
     dispensary_quarter = models.CharField(max_length=255)

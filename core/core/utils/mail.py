@@ -36,8 +36,7 @@ def send_email_to_admins(subject, message, attachment_paths=None):
     
     
 
-def send_email_to_dispensary_doctors(dispensary_token, subject, message, attachment_paths=None):
-    dispensary = get_object_or_404(Dispensary, token=dispensary_token)
+def send_email_to_dispensary_doctors(dispensary, subject, message, attachment_paths=None):
     doctors = Doctor.objects.filter(dispensary=dispensary).select_related('user')
     
     # Récupération des emails des médecins

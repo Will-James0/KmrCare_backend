@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import Appointment, AppointmentHistory
+from api.models import Appointment
 from care.serializers import UserPublicSerializer, DispensaryPublicSerializer
 from api.validators import validate_hour_within_dispensary, validate_modification_timing
 
@@ -10,7 +10,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Appointment
-        fields = ["patient", "dispensary", "date", "hour", "reason", "file", "created_at", "updated_at", "cancelled_by", "token"]
+        fields = ["patient", "dispensary", "date", "hour", "reason", "file", "created_at", "updated_at", "token"]
         extra_kwargs = {
             "file": {"allow_blank": True, "allow_null": True},
             "created_at": {"read_only": True}, "updated_at": {"read_only": True},

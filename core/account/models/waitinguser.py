@@ -19,6 +19,7 @@ class WaitingUser(models.Model):
     dispensary_opening = models.TimeField()
     dispensary_ending = models.TimeField()
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    logo = models.ImageField(upload_to='waiting_user_logos/', null=True, blank=True)
     
     def __str__(self):
         return f"{self.username} - {self.dispensary_name}"

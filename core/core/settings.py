@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-lupveg1lq7xut5yt=f^mb=_*$ar6%%=fc1(2z+czu$)1ofib6m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'care.apps.CareConfig',
     'api.apps.ApiConfig',
+    'channels',
+    'corsheaders', 
 ]
 
 # REST_FRAMEWORK = {
@@ -57,6 +59,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -83,6 +86,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+ASGI_APPLICATION = 'core.asgi.application'
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
 
 
 # Database
@@ -142,6 +154,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'account.User'
 
+# CORS settings
+
+
 # Configurations du server mail
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
 EMAIL_HOST = os.getenv('EMAIL_HOST')
@@ -150,3 +165,7 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 # DEFAULT_FROM_EMAIL = 'tonemail@gmail.com'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]

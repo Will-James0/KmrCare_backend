@@ -21,7 +21,7 @@ class WaitingUserSerializer(serializers.ModelSerializer):
         fields = [
             "first_name", "last_name", "email", "username", "password",
             "dispensary_name", "dispensary_specialities", "dispensary_quarter", "dispensary_localisation",
-            "dispensary_phone", "dispensary_email", "dispensary_opening", "dispensary_ending", "token", "phone"
+            "dispensary_phone", "dispensary_email", "dispensary_opening", "dispensary_ending", "token", "phone", "logo"
         ]
         extra_kwargs = {
             "password": {"write_only": True},

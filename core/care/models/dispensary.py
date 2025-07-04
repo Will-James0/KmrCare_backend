@@ -16,6 +16,7 @@ class Dispensary(models.Model):
     opening = models.TimeField()
     ending = models.TimeField()
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    logo = models.ImageField(upload_to='dispensary_logos/', null=True, blank=True)
     
     def __str__(self):
         return f"Dispensaire {self.name}"

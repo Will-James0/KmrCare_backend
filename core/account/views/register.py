@@ -86,12 +86,14 @@ class ApproveRegisterView(APIView):
                 phone = waiting.dispensary_phone,
                 email = waiting.email,
                 opening = waiting.dispensary_opening,
-                ending = waiting.dispensary_ending
+                ending = waiting.dispensary_ending,
+                logo = waiting.logo
             )
             dispensary.save()
+            waiting.logo.delete(save=False)  # Delete the logo file from storage
             waiting.delete()
             subject = "✅ Votre demande d'inscription a été acceptée !"
-            message = formation_registration_accepted()
+            message = format_registration_accepted()
             send_user_email(
                 subject=subject,
                 message=message,
@@ -112,6 +114,7 @@ class RefuseRegisterView(APIView):
     def post(self, request, token):
         try:
             waiting = get_object_or_404(WaitingUser, token=token)
+            waiting.logo.delete(save=False)  # Delete the logo file from storage
             waiting.delete()
             subject = "❌ Votre demande d'inscription a été rejetée"
             message = format_registration_rejected()

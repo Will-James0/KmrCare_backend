@@ -133,6 +133,9 @@ class EndAppointmentView(APIView):
     permission_classes = [IsDispensaryMember]
 
     def post(self, request, token):
+        observations = request.data.get("observations", "")
+        if not observations:
+            return Response({"error": "Les observations sont requises pour terminer le rendez-vous."}, status=status.HTTP_400_BAD_REQUEST)
         try:
             appointment = get_object_or_404(Appointment, token=token)
             history = AppointmentHistory(
@@ -143,6 +146,7 @@ class EndAppointmentView(APIView):
                 reason=appointment.reason,
                 file=appointment.file,
                 final_status=AppointmentStatus.COMPLETED,
+                observations=observations
             )
             history.save()
             if appointment.file:

@@ -15,7 +15,8 @@ class AppointmentHistorySerializer(serializers.ModelSerializer):
             "patient", "dispensary", "date", "hour", "reason", "file",
             "created_at", "updated_at", "token",
             "final_status", "completed_at", "cancelled_by",
-            "confirmed_by", "rejected_by", "date_cancelled", "hour_cancelled"
+            "confirmed_by", "rejected_by", "date_cancelled", "hour_cancelled",
+            "observations"
         ]
         extra_kwargs = {
             "file": {"allow_blank": True, "allow_null": True},

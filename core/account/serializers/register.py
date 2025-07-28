@@ -36,7 +36,7 @@ class RegisterAdminSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "email", "username", "password", "is_staff", "is_superuser")
+        fields = ("first_name", "last_name", "email", "username", "password", "is_staff", "is_superuser", "phone")
         extra_kwargs = {
             "is_superuser": {"allow_null": True, "allow_blank": True}
         }

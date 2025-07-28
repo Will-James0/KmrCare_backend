@@ -20,10 +20,11 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
 class UpdateAppointmentSerializer(serializers.ModelSerializer):
     patient = UserPublicSerializer(read_only=True)
+    observations = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model = Appointment
-        fields = ["patient", "date", "hour", "reason", "file", "status"]
+        fields = ["patient", "date", "hour", "reason", "file", "status", "observations"]
         extra_kwargs = {
             "date": {"allow_blank": True, "allow_null": True},
             "hour": {"allow_blank": True, "allow_null": True},

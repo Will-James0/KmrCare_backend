@@ -11,6 +11,10 @@ from django.contrib.auth import get_user_model
 from core.utils import *
 from account.authentication import AuthTokenAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+import logging
+
+# Configuration du logger
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -42,22 +46,44 @@ class RegisterOwnerView(generics.ListCreateAPIView):
         password = make_password(mdp)
         serializer.save(password = password)
         
-        
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        subject = "Nouvelle demande d'inscription"
-        message = format_registration_email(serializer.data)
-        send_email_to_admins(subject, message)
-        send_user_email(
-            subject="Demande d'inscription reçue",
-            message=format_user_registration(serializer.data),
-            recipient_list=[serializer.data['email']]
-        )
-        return Response({
-            "message": "Demande envoyée avec succès !",
-        }, status=status.HTTP_201_CREATED)
+        # Logging des données reçues pour debug
+        logger.info(f"Données reçues pour l'inscription owner: {request.data}")
+        
+        try:
+            serializer = self.get_serializer(data=request.data)
+            
+            # Log des erreurs de validation si le serializer n'est pas valide
+            if not serializer.is_valid():
+                logger.error(f"Erreurs de validation du serializer: {serializer.errors}")
+                return Response({
+                    "message": "Données de validation incorrectes",
+                    "errors": serializer.errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            self.perform_create(serializer)
+            
+            # Envoi des emails
+            subject = "Nouvelle demande d'inscription"
+            message = format_registration_email(serializer.data)
+            send_email_to_admins(subject, message)
+            send_user_email(
+                subject="Demande d'inscription reçue",
+                message=format_user_registration(serializer.data),
+                recipient_list=[serializer.data['email']]
+            )
+            
+            logger.info(f"Inscription owner créée avec succès pour: {serializer.data.get('username')}")
+            return Response({
+                "message": "Demande envoyée avec succès !",
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            logger.error(f"Erreur lors de la création de l'inscription owner: {str(e)}")
+            return Response({
+                "message": "Une erreur est survenue lors de l'inscription",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 class ApproveRegisterView(APIView):
     """
@@ -74,7 +100,8 @@ class ApproveRegisterView(APIView):
                 password = waiting.password,
                 first_name = waiting.first_name,
                 last_name = waiting.last_name,
-                email = waiting.email
+                email = waiting.email,
+                phone = waiting.phone,
             )
             user.save()
             dispensary = Dispensary(

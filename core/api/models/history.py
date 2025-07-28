@@ -26,6 +26,7 @@ class AppointmentHistory(models.Model):
     hour_cancelled = models.TimeField(null=True, blank=True)
     cancelled_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='cancelled_history')
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    observations = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Historique - {self.patient.username} ({self.final_status}) le {self.date.strftime('%Y-%m-%d')}"

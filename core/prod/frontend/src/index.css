@@ -1,0 +1,175 @@
+@import url("https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap");
+@import "tailwindcss";
+@layer components {
+  .all-\[unset\] {
+    all: unset;
+  }
+}
+@theme {
+  --color-primary:  #37A936;
+  --color-secondary: #10425d;
+  --accent: rgba(191, 210, 248, 1);
+  --black: rgba(33, 33, 36, 1);
+  --body-2-font-family: "Poppins", sans-serif;
+  --body-2-font-size: 18px;
+  --body-2-font-style: normal;
+  --body-2-font-weight: 400;
+  --body-2-letter-spacing: 0px;
+  --body-2-line-height: 140%;
+  --body-font-family: "Poppins", sans-serif;
+  --body-font-size: 16px;
+  --body-font-style: normal;
+  --body-font-weight: 400;
+  --body-letter-spacing: 0px;
+  --body-line-height: 140%;
+  --button-text-font-family: "Poppins", sans-serif;
+  --button-text-font-size: 14px;
+  --button-text-font-style: normal;
+  --button-text-font-weight: 500;
+  --button-text-letter-spacing: 0px;
+  --button-text-line-height: normal;
+  --caption-font-family: "Poppins", sans-serif;
+  --caption-font-size: 18px;
+  --caption-font-style: normal;
+  --caption-font-weight: 700;
+  --caption-letter-spacing: 2.88px;
+  --caption-line-height: normal;
+  --display-2-font-family: "Poppins", sans-serif;
+  --display-2-font-size: 32px;
+  --display-2-font-style: normal;
+  --display-2-font-weight: 400;
+  --display-2-letter-spacing: 0px;
+  --display-2-line-height: normal;
+  --primary: rgba(31, 43, 108, 1);
+  --secondary: rgba(21, 158, 236, 1);
+  --small-font-family: "Poppins", sans-serif;
+  --small-font-size: 14px;
+  --small-font-style: normal;
+  --small-font-weight: 400;
+  --small-letter-spacing: 0px;
+  --small-line-height: normal;
+  --title-font-family: "Work Sans", Helvetica;
+  --title-font-size: 26px;
+  --title-font-style: normal;
+  --title-font-weight: 500;
+  --title-letter-spacing: 0px;
+  --title-line-height: normal;
+  --white: rgba(252, 254, 254, 1);
+}
+body {
+  color: white;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/*Animation de Load*/
+.box {
+  box-shadow: 0 0 15px #0aade4;
+}
+
+/* Navigation */
+.nav-ul {
+  @apply flex flex-col items-center gap-4 sm:flex-row md:gap-6 relative z-20;
+}
+
+.nav-li {
+  @apply text-secondary hover:text-[#0b9444] max-sm:w-full max-sm:rounded-md py-2 max-sm:px-5;
+}
+
+.nav-link {
+  @apply text-lg md:text-base hover:border-b-3 transition-colors;
+}
+/* Button Components */
+.btn {
+  @apply relative p-3 text-sm text-center font-bold rounded-sm bg-[#0b9444] hover:bg-[#ffffff] hover:text-secondary hover:border-cyan-600 transition-colors w-[12rem] cursor-pointer overflow-hidden;
+}
+
+.btn-secondary {
+  position: relative;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  transition: all 0.3s;
+  width: 12rem;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Medical themed cards */
+.dispensaire-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+  padding: 1.5rem;
+  border: 1px solid rgba(229, 231, 235, 1);
+}
+
+.dispensaire-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-0.5rem);
+}
+
+/* Service badges */
+.service-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: rgba(11, 148, 68, 0.1);
+  color: #0b9444;
+  border: 1px solid rgba(11, 148, 68, 0.2);
+}
+
+/* Medical icons */
+.medical-icon {
+  width: 3rem;
+  height: 3rem;
+  padding: 0.5rem;
+  background: linear-gradient(to bottom right, #0b9444, #0a7c3a);
+  border-radius: 9999px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Appointment slots */
+.appointment-time-slot {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.appointment-time-slot:hover {
+  border-color: #0b9444;
+  background-color: rgba(11, 148, 68, 0.05);
+}
+
+.appointment-time-slot.selected {
+  border-color: #0b9444;
+  background-color: #0b9444;
+  color: white;
+}
+
+/* Health gradients */
+.health-gradient {
+  background: linear-gradient(to right, #0b9444, #10425d, #0b9444);
+}
+
+.dispensaire-gradient {
+  background: linear-gradient(to bottom right, #dbeafe, #dcfce7);
+}
+

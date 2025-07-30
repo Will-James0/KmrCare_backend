@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-lupveg1lq7xut5yt=f^mb=_*$ar6%%=fc1(2z+czu$)1ofib6m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["148.230.112.173", "kmr.are.site"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -102,14 +102,14 @@ CHANNEL_LAYERS = {
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-        'NAME': os.getenv('DB_NAME', 'postgres'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', '1234'),
-        'HOST': os.getenv('DB_HOST', 'db'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
+        # 'NAME': os.getenv('DB_NAME', 'postgres'),
+        # 'USER': os.getenv('DB_USER', 'postgres'),
+        # 'PASSWORD': os.getenv('DB_PASSWORD', '1234'),
+        # 'HOST': os.getenv('DB_HOST', 'db'),
+        # 'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -173,9 +173,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 # DEFAULT_FROM_EMAIL = 'tonemail@gmail.com'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://148.230.112.173:80",
-    "http://148.230.112.173:3001",
-    "http://148.230.112.173:3002",
+    "http://localhost:3000",
 ]
 
 # Configuration du logging pour le debug

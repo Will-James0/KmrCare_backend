@@ -69,6 +69,15 @@ class DoctorLoginAPIView(ObtainAuthToken):
                 'is_doctor': True,
                 'is_owner': True if Dispensary.objects.filter(owner=user).exists() else False
             }
+            
+            dispensary = Dispensary.objects.get(owner=user) or Doctor.objects.get(user=user).dispensary
+            
+            data["dispensary"] = {
+                "dispensary_name": dispensary.name,
+                "dispensary_logo": request.build_absolute_uri(dispensary.logo.url) if dispensary.logo else None,
+                "dispensary_token": dispensary.token,
+            }
+            
             return Response(data, status=status.HTTP_200_OK)
         else:
             return Response({"message": "Vous n'êtes pas autorisé à vous connecter en tant que médecin."}, status=status.HTTP_403_FORBIDDEN)

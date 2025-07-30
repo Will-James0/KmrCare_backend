@@ -155,7 +155,7 @@ class RefuseRegisterView(APIView):
             return Response({"message": "Iscription introuvable !"}, status=status.HTTP_404_NOT_FOUND)
         
         
-class RegisterAdminView(generics.CreateAPIView):
+class AdminRegisterUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = register.RegisterUserSerializer
     authentication_classes = [AuthTokenAuthentication]
@@ -164,8 +164,7 @@ class RegisterAdminView(generics.CreateAPIView):
     def perform_create(self, serializer):
         mdp = serializer.validated_data.get("password")
         password = make_password(mdp)
-        staff = True
-        serializer.save(password = password, is_staff = staff)
+        serializer.save(password = password)
         
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

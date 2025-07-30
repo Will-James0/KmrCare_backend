@@ -13,6 +13,7 @@ class Doctor(models.Model):
     dispensary = models.ForeignKey(Dispensary, on_delete=models.SET_NULL, null=True, related_name='doctors')
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    
+    specialization = models.TextField(blank=True, null=True)
+
     def __str__(self):
         return f"Doctor {self.user.username} at {self.dispensary.name if self.dispensary else 'No Dispensary'}"

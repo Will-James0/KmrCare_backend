@@ -10,7 +10,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "email", "username", "password", "phone")
+        fields = ("first_name", "last_name", "email", "username", "password", "phone", "is_staff", "is_superuser")
         
 
 class WaitingUserSerializer(serializers.ModelSerializer):
@@ -30,6 +30,16 @@ class WaitingUserSerializer(serializers.ModelSerializer):
             "token": {"read_only": True},
             "phone": {"allow_null": True, "required": False, "allow_blank": True},
         }
+        
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists() or WaitingUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Cet email est déjà utilisé.")
+        return value
+    
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists() or WaitingUser.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Ce nom d'utilisateur est déjà utilisé.")
+        return value
     
     
 class RegisterAdminSerializer(serializers.ModelSerializer):

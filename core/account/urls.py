@@ -9,7 +9,6 @@ urlpatterns = [
     path("register/", include([
         path("user/", RegisterUserView.as_view()),
         path("owner/", RegisterOwnerView.as_view()),
-        path("admin/", RegisterAdminView.as_view())
     ])),
     
     path("login/", include([
@@ -31,8 +30,10 @@ urlpatterns = [
     
     path("user/", include([
         path("list/", ListUsersView.as_view()),
+        path("create/", AdminRegisterUserView.as_view()),
         path("details/<uuid:token>/", UserDetailView.as_view()),
         path("update/<uuid:token>/", UpdateUserView.as_view()),
         path("delete/<uuid:token>/", DeleteUserView.as_view()),
+        path("role/<uuid:token>/", UpdateUserRoleView.as_view()),
     ])),
 ]

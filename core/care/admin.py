@@ -6,7 +6,7 @@ from .models import Doctor, Dispensary
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
     model = Doctor
-    list_display = ["user", "role", "dispensary", "token"]
+    list_display = ["user", "role", "specialization", "dispensary", "token"]
     
 @admin.register(Dispensary)
 class DispensaryAdmin(admin.ModelAdmin):

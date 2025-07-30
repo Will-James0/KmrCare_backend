@@ -133,7 +133,7 @@ class EndAppointmentView(APIView):
     permission_classes = [IsDispensaryMember]
 
     def post(self, request, token):
-        observations = request.data.get("observations", "")
+        observations = request.data.get("observation", "")
         if not observations:
             return Response({"error": "Les observations sont requises pour terminer le rendez-vous."}, status=status.HTTP_400_BAD_REQUEST)
         try:

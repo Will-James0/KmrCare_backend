@@ -4,4 +4,4 @@ class UserQuerySetMixin():
     def get_queryset(self):
         qs = super().get_queryset()
         user = self.request.user
-        return qs.filter(patient = user).distinct().order_by('-created_at')
+        return qs.filter(patient = user).distinct()

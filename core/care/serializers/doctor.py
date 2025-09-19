@@ -20,7 +20,7 @@ class UserPublicSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "username", "email", "image", "token")
+        fields = ("first_name", "last_name", "username", "email", "phone","image", "token")
         extra_kwargs = {
             "first_name": {"read_only": True}, "last_name": {"read_only": True},
             "username": {"read_only": True}, "email": {"read_only": True},
@@ -44,6 +44,7 @@ class AddDoctorSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
     role = serializers.CharField()
+    specialization = serializers.CharField(allow_null=True, allow_blank=True)
 
     def validate_role(self, value):
         if not Role.objects.filter(code=value).exists():
@@ -63,6 +64,7 @@ class AddDoctorSerializer(serializers.Serializer):
     @transaction.atomic
     def create(self, validated_data):
         role_code = validated_data.pop("role")
+        specialization = validated_data.pop("specialization", "")  # Extraire la spécialisation
         role = Role.objects.get(code=role_code)
         dispensary = self.context["dispensary"]
 
@@ -72,7 +74,8 @@ class AddDoctorSerializer(serializers.Serializer):
         doctor = Doctor.objects.create(
             user=user,
             dispensary=dispensary,
-            role=role
+            role=role,
+            specialization=specialization  # Assigner la spécialisation au Doctor
         )
         return doctor
     
@@ -83,7 +86,7 @@ class DoctorSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Doctor
-        fields = ("user", "dispensary", "role", "token")
+        fields = ("user", "dispensary", "role", "token", "specialization")
         extra_kwargs = {
             "token": {"read_only": True}
         }

@@ -5,7 +5,6 @@ from care.views import dispensary, doctor
 urlpatterns = [
     path("doctor/", include([
         path("list/", doctor.ListDoctorView.as_view()),
-        path("list/", doctor.ListDoctorView.as_view()),
         path("create/<uuid:token>/", doctor.AddDoctorView.as_view()),
         path("delete/<uuid:token>/", doctor.DeleteDoctorView.as_view()),
         path("details/<uuid:token>/", doctor.RetrieveDctorView.as_view()),

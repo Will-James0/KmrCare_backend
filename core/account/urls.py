@@ -1,14 +1,14 @@
 from django.urls import path, include
-from .views.register import RegisterUserView, RegisterOwnerView, ApproveRegisterView, RefuseRegisterView, RegisterAdminView
-from .views.login import LoginAPIView, DoctorLoginAPIView, AdminLoginAPIView
-from .views.profile import ProfileMixinView
+from .views.register import *
+from .views.login import *
+from .views.profile import *
+from .views.user import *
 
 # Create your views here.
 urlpatterns = [
     path("register/", include([
         path("user/", RegisterUserView.as_view()),
         path("owner/", RegisterOwnerView.as_view()),
-        path("admin/", RegisterAdminView.as_view())
     ])),
     
     path("login/", include([
@@ -26,5 +26,14 @@ urlpatterns = [
     path("profile/", include([
         path("<uuid:token>/", ProfileMixinView.as_view()),
         path("update/<uuid:token>/", ProfileMixinView.as_view)
-    ]))
+    ])),
+    
+    path("user/", include([
+        path("list/", ListUsersView.as_view()),
+        path("create/", AdminRegisterUserView.as_view()),
+        path("details/<uuid:token>/", UserDetailView.as_view()),
+        path("update/<uuid:token>/", UpdateUserView.as_view()),
+        path("delete/<uuid:token>/", DeleteUserView.as_view()),
+        path("role/<uuid:token>/", UpdateUserRoleView.as_view()),
+    ])),
 ]

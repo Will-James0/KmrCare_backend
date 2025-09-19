@@ -1,0 +1,55 @@
+version: '3'
+
+networks:
+  restapi-network:
+    driver: bridge
+
+services:
+  web:
+    build: .
+    container_name: restapi-web
+    volumes:
+      - reststatics:/app/staticfiles
+    depends_on:
+      - db
+    networks:
+      - restapi-network
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=postgres
+    command: >
+      sh -c "
+        python manage.py makemigrations &&
+        python manage.py migrate &&
+        python manage.py collectstatic --noinput &&
+        gunicorn --bind 0.0.0.0:8000 --workers 3 restApi.wsgi:application
+      "
+
+  db:
+    image: postgres:latest
+    container_name: restapi-db
+    environment:
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - restapi-db:/var/lib/postgresql/data
+    networks:
+      - restapi-network
+
+  nginx:
+    image: nginx:latest
+    container_name: restapi-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - reststatics:/home/app/web/staticfiles
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - web
+    networks:
+      - restapi-network
+
+volumes:
+  restapi-db:
+  reststatics:

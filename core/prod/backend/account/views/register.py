@@ -1,0 +1,176 @@
+from django.shortcuts import get_object_or_404
+from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from account.serializers import register
+from account.models import WaitingUser
+from care.models import Dispensary
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth import get_user_model
+from core.utils import *
+from account.authentication import AuthTokenAuthentication
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+import logging
+
+# Configuration du logger
+logger = logging.getLogger(__name__)
+
+User = get_user_model()
+
+
+class RegisterUserView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = register.RegisterUserSerializer
+    
+    def perform_create(self, serializer):
+        mdp = serializer.validated_data.get("password")
+        password = make_password(mdp)
+        serializer.save(password = password)
+        
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response({
+            "message": "Compte créé avec succès !",
+        }, status=status.HTTP_201_CREATED)
+        
+
+class RegisterOwnerView(generics.ListCreateAPIView):
+    queryset = WaitingUser.objects.all()
+    serializer_class = register.WaitingUserSerializer
+    
+    def perform_create(self, serializer):
+        mdp = serializer.validated_data.get("password")
+        password = make_password(mdp)
+        serializer.save(password = password)
+        
+    def create(self, request, *args, **kwargs):
+        # Logging des données reçues pour debug
+        logger.info(f"Données reçues pour l'inscription owner: {request.data}")
+        
+        try:
+            serializer = self.get_serializer(data=request.data)
+            
+            # Log des erreurs de validation si le serializer n'est pas valide
+            if not serializer.is_valid():
+                logger.error(f"Erreurs de validation du serializer: {serializer.errors}")
+                return Response({
+                    "message": "Données de validation incorrectes",
+                    "errors": serializer.errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            self.perform_create(serializer)
+            
+            # Envoi des emails
+            subject = "Nouvelle demande d'inscription"
+            message = format_registration_email(serializer.data)
+            send_email_to_admins(subject, message)
+            send_user_email(
+                subject="Demande d'inscription reçue",
+                message=format_user_registration(serializer.data),
+                recipient_list=[serializer.data['email']]
+            )
+            
+            logger.info(f"Inscription owner créée avec succès pour: {serializer.data.get('username')}")
+            return Response({
+                "message": "Demande envoyée avec succès !",
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            logger.error(f"Erreur lors de la création de l'inscription owner: {str(e)}")
+            return Response({
+                "message": "Une erreur est survenue lors de l'inscription",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class ApproveRegisterView(APIView):
+    """
+    Approuver la demande
+    """
+    authentication_classes = [AuthTokenAuthentication]
+    permission_classes = [IsAdminUser]
+    
+    def post(self, request, token):
+        try:
+            waiting = get_object_or_404(WaitingUser, token=token)
+            user = User(
+                username = waiting.username,
+                password = waiting.password,
+                first_name = waiting.first_name,
+                last_name = waiting.last_name,
+                email = waiting.email,
+                phone = waiting.phone,
+            )
+            user.save()
+            dispensary = Dispensary(
+                owner = user,
+                name = waiting.dispensary_name,
+                specialities = waiting.dispensary_specialities,
+                quarter = waiting.dispensary_quarter,
+                localisation = waiting.dispensary_localisation,
+                phone = waiting.dispensary_phone,
+                email = waiting.email,
+                opening = waiting.dispensary_opening,
+                ending = waiting.dispensary_ending,
+                logo = waiting.logo
+            )
+            dispensary.save()
+            waiting.logo.delete(save=False)  # Delete the logo file from storage
+            waiting.delete()
+            subject = "✅ Votre demande d'inscription a été acceptée !"
+            message = format_registration_accepted()
+            send_user_email(
+                subject=subject,
+                message=message,
+                recipient_list=[user.email]
+            )
+            return Response({"message": "Inscription approuvée !"}, status=status.HTTP_200_OK)
+        except WaitingUser.DoesNotExist:
+            return Response({"message": "Iscription introuvable !"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class RefuseRegisterView(APIView):
+    """
+    View pour refuser un utilisateur de la file d'attente
+    """
+    authentication_classes = [AuthTokenAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, token):
+        try:
+            waiting = get_object_or_404(WaitingUser, token=token)
+            waiting.logo.delete(save=False)  # Delete the logo file from storage
+            waiting.delete()
+            subject = "❌ Votre demande d'inscription a été rejetée"
+            message = format_registration_rejected()
+            send_user_email(
+                subject=subject,
+                message=message,
+                recipient_list=[waiting.email]
+            )
+            return Response({"message": "Incription rejetée"}, status=status.HTTP_200_OK)
+        except WaitingUser.DoesNotExist:
+            return Response({"message": "Iscription introuvable !"}, status=status.HTTP_404_NOT_FOUND)
+        
+        
+class AdminRegisterUserView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = register.RegisterUserSerializer
+    authentication_classes = [AuthTokenAuthentication]
+    permission_classes = [IsAdminUser]
+
+    def perform_create(self, serializer):
+        mdp = serializer.validated_data.get("password")
+        password = make_password(mdp)
+        serializer.save(password = password)
+        
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response({
+            "message": "Compte créé avec succès !",
+        }, status=status.HTTP_201_CREATED)
+        

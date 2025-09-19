@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-lupveg1lq7xut5yt=f^mb=_*$ar6%%=fc1(2z+czu$)1ofib6m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -104,6 +104,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
+        # 'NAME': os.getenv('DB_NAME', 'postgres'),
+        # 'USER': os.getenv('DB_USER', 'postgres'),
+        # 'PASSWORD': os.getenv('DB_PASSWORD', '1234'),
+        # 'HOST': os.getenv('DB_HOST', 'db'),
+        # 'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -168,6 +174,39 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+<<<<<<< HEAD
     "http://localhost:3001",
     "http://localhost:3002",
 ]
+=======
+]
+
+# Configuration du logging pour le debug
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'account.views.register': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+>>>>>>> 7ed5c49a05dbf8c7f07c9e1dd2d2fe11dea0e280

@@ -7,6 +7,11 @@ urlpatterns = [
             path("list/", AdminAppointmentListView.as_view()),
             path("details/<uuid:token>/", AdminAppointmentDetailView.as_view()),
         ])),
+        
+        path("history/", include([
+            path("list/", AdminHistoryListView.as_view()),
+            path("details/<uuid:token>/", AdminHistoryDetailView.as_view()),
+        ])),
     ])),
 
     path("dispensary/", include([
@@ -19,6 +24,11 @@ urlpatterns = [
             path("start/<uuid:token>/", StartAppointmentView.as_view()),   # 🚀 Début
             path("end/<uuid:token>/", EndAppointmentView.as_view()),       # ✅ Fin
         ])),
+        
+        path("history/", include([
+            path("list/", DispensaryHistoryListView.as_view()),
+            path("details/<uuid:token>/", DispensaryHistoryDetailView.as_view()),
+        ])),
     ])),
 
     path("patient/", include([
@@ -28,6 +38,11 @@ urlpatterns = [
             path("make/", MakeAnAppointmentView.as_view()),
             path("update/<uuid:token>/", UpdateAppointmentView.as_view()),
             path("cancel/<uuid:token>/", CancelAppointmentView.as_view()),
+        ])),
+        
+        path("history/", include([
+            path("list/", PatientHistoryListView.as_view()),
+            path("details/<uuid:token>/", PatientHistoryDetailView.as_view()),
         ])),
     ])),
 ]
